@@ -1,0 +1,76 @@
+{
+  "name": "sequent-promises",
+  "description": "sequentPromises resolves Promises sequentially",
+  "keywords": [
+    "promise"
+  ],
+  "version": "0.0.1",
+  "author": {
+    "name": "Krivega Dmitriy",
+    "email": "mr.krivega@gmail.com",
+    "url": "https://krivega.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Krivega/sequent-promises.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Krivega/sequent-promises/issues"
+  },
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "main:src": "src/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "dependencies": {
+    "promise-delay": "^2.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "babel-eslint": "10.0.3",
+    "babel-jest": "^25.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jest": "^23.8.0",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.3",
+    "husky": "^4.2.3",
+    "jest": "25.1.0",
+    "lint-staged": "^10.0.7",
+    "prettier": "^1.19.1",
+    "rollup": "^1.31.1",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-terser": "^5.2.0",
+    "standard-version": "^7.1.0"
+  },
+  "scripts": {
+    "lint": "eslint src/. --ext .js",
+    "format": "prettier --write \"src/**/*.js\"",
+    "test": "jest",
+    "build": "NODE_ENV=production rollup --config",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "release": "standard-version"
+  },
+  "standard-version": {
+    "scripts": {
+      "prerelease": "npm run lint && CI=true npm test",
+      "postchangelog": "prettier --write \"CHANGELOG.md\""
+    }
+  }
+}
