@@ -2,4 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.2](https://github.com/Krivega/sequent-promises/compare/v0.0.1...v0.0.2) (2020-02-28)
+
+### Features
+
+- add function isNotRunningError ([7d7077a](https://github.com/Krivega/sequent-promises/commit/7d7077a0adeb66606227df7f20f30eda17a47c08))
+
+### Bug Fixes
+
+- fix create not running error ([0a466e1](https://github.com/Krivega/sequent-promises/commit/0a466e1e4c3e2d17a3e3d2ef8e0f1ab8b519758a))
+
 ### 0.0.1 (2020-02-25)
