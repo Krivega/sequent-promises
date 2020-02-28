@@ -1,5 +1,5 @@
 import delayPromise from 'promise-delay';
-import sequentPromises from '../index';
+import sequentPromises, { isNotRunningError } from '../index';
 
 const result = 'result';
 const error = new Error('error');
@@ -68,6 +68,16 @@ describe('sequentPromises', () => {
     return request.then(({ results, errors }) => {
       expect(results).toEqual([result, 10]);
       expect(errors.length).toBe(2);
+    });
+  });
+
+  it('canRunTask', () => {
+    const canRunTask = task => task !== promiseReject;
+
+    return sequentPromises(promises, canRunTask).then(({ results, errors }) => {
+      expect(results).toEqual([result, result]);
+      expect(errors.length).toBe(1);
+      expect(isNotRunningError(errors[0])).toEqual(true);
     });
   });
 });

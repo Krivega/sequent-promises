@@ -1,18 +1,28 @@
-const idError = 'ERROR_CANCELED';
+const idError = 'ERROR_NOT_RUNNING';
 
 /**
- * Creates an error canceled.
+ * Creates an error not running.
  *
  * @param {Promise} basePromise - The base promise
  *
  * @returns {object} error
  */
-const createErrorCanceled = basePromise => ({
+const createErrorNotRunning = basePromise => ({
   basePromise,
   id: idError,
-  name: 'Canceled',
+  name: 'Not running',
   message: 'Promise was not running'
 });
+
+/**
+ * Determines if not running. error.
+ *
+ * @param {Object} param    - param
+ * @param {string} param.id - The identifier
+ *
+ * @returns {boolean} True if not running. error, False otherwise.
+ */
+export const isNotRunningError = ({ id }) => id === idError;
 
 /**
  * The default is can run task
@@ -27,8 +37,8 @@ const canRunTaskTrue = () => true;
  * @func
  * @category Function
  *
- * @param {array}    promises - Functions returns promises
- * @param {function} canRunTask  - Function returns true, if need run current task
+ * @param {array}    promises   - Functions returns promises
+ * @param {function} canRunTask - Function returns true, if need run current task
  *
  * @returns {Propmise} resolved object with arrays of results and errors
  *
@@ -51,7 +61,7 @@ const sequentPromises = (promises, canRunTask = canRunTaskTrue) =>
         if (canRunTask(currentTask)) {
           taskPromise = currentTask();
         } else {
-          taskPromise = Promise.reject(createErrorCanceled(currentTask));
+          taskPromise = Promise.reject(createErrorNotRunning(currentTask));
         }
 
         return taskPromise
