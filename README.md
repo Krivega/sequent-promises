@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/sequent-promises?style=flat-square)](https://www.npmjs.com/package/sequent-promises)
 ![npm bundle size](https://img.shields.io/bundlephobia/minzip/sequent-promises?style=flat-square)
 
-Various abstractions over promises
+Call promises one by one, ignoring the state (fulfilled or rejected). and returning the collected data in the tuple `{ results, errors }`.
 
 ## Install
 
@@ -21,7 +21,20 @@ yarn add sequent-promises
 
 ## Usage
 
-## API
+```js
+import sequentPromises, { isNotRunningError } from 'sequent-promises';
+
+const result = 'result';
+const error = new Error('error');
+const promiseResolve = () => Promise.resolve(result);
+const promiseReject = () => Promise.reject(error);
+
+sequentPromises([promiseResolve, promiseReject, promiseResolve]).then(({ results, errors }) => {
+  console.log(results); //[result, result]
+  console.log(errors); //[Not running: Promise was not running]
+  console.log(isNotRunningError(errors[0])); //true;
+});
+```
 
 ## Run tests
 
