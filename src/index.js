@@ -7,12 +7,15 @@ const idError = 'ERROR_NOT_RUNNING';
  *
  * @returns {object} error
  */
-const createErrorNotRunning = basePromise => ({
-  basePromise,
-  id: idError,
-  name: 'Not running',
-  message: 'Promise was not running'
-});
+const createErrorNotRunning = basePromise => {
+  const error = new Error('Promise was not running');
+
+  error.basePromise = basePromise;
+  error.id = idError;
+  error.name = 'Not running';
+
+  return error;
+};
 
 /**
  * Determines if not running. error.
