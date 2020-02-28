@@ -17,6 +17,4 @@ const getOutputModule = moduleName => {
   ];
 };
 
-export default [
-  { plugins, input: './src/index.js', output: getOutputModule('.') }
-];
+export default [{ plugins, input: './src/index.js', output: getOutputModule('.') }];
