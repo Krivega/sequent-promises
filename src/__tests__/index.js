@@ -21,7 +21,7 @@ const promiseReject = () => Promise.reject(error);
  * @param {number} timeout - Timeout
  * @returns {Promise} promiseDelayed
  */
-const resolvePromiseDelayed = timeout => () => delayPromise(timeout).then(() => timeout);
+const resolvePromiseDelayed = (timeout) => () => delayPromise(timeout).then(() => timeout);
 
 const promises = [promiseResolve, promiseReject, promiseResolve];
 const emptyPromises = [promiseReject, promiseReject];
@@ -29,7 +29,7 @@ const delayedPromises = [
   promiseResolve,
   resolvePromiseDelayed(10),
   resolvePromiseDelayed(100),
-  resolvePromiseDelayed(100)
+  resolvePromiseDelayed(100),
 ];
 
 describe('sequentPromises', () => {
@@ -72,7 +72,7 @@ describe('sequentPromises', () => {
   });
 
   it('canRunTask', () => {
-    const canRunTask = task => task !== promiseReject;
+    const canRunTask = (task) => task !== promiseReject;
 
     return sequentPromises(promises, canRunTask).then(({ results, errors }) => {
       expect(results).toEqual([result, result]);

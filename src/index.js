@@ -7,7 +7,7 @@ const idError = 'ERROR_NOT_RUNNING';
  *
  * @returns {object} error
  */
-const createErrorNotRunning = basePromise => {
+const createErrorNotRunning = (basePromise) => {
   const error = new Error('Promise was not running');
 
   error.basePromise = basePromise;
@@ -68,13 +68,13 @@ const sequentPromises = (promises, canRunTask = canRunTaskTrue) =>
         }
 
         return taskPromise
-          .then(currentResult => ({
+          .then((currentResult) => ({
             errors,
-            results: [...results, currentResult]
+            results: [...results, currentResult],
           }))
-          .catch(currentError => ({
+          .catch((currentError) => ({
             results,
-            errors: [...errors, currentError]
+            errors: [...errors, currentError],
           }));
       }),
     Promise.resolve({ results: [], errors: [] })
