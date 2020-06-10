@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/Krivega/sequent-promises/compare/v0.1.0...v0.1.1) (2020-06-10)
+
+### Features
+
+- add isSuccessful, isError for last promise ([fd5b5de](https://github.com/Krivega/sequent-promises/commit/fd5b5dee934cb4582fc08685bd087ebfac19e086))
+
 ## [0.1.0](https://github.com/Krivega/sequent-promises/compare/v0.0.3...v0.1.0) (2020-06-10)
 
 ### ⚠ BREAKING CHANGES
