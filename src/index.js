@@ -43,22 +43,23 @@ const canRunTaskTrue = () => true;
  * @param {array}    promises   - Functions returns promises
  * @param {function} canRunTask - Function returns true, if need run current task
  *
- * @returns {Propmise} resolved object with arrays of results and errors
+ * @returns {Promise} resolved object with arrays of success, errors and results
  *
  * @example
  * const urls = ['/url1', '/url2', '/url3']
  * const fetchUrls = urls.map(url => () => fetch(url))
  *
  * sequentPromises(fetchUrls)
- *   .then(({results, errors}) => {
- *     console.log(results);
+ *   .then(({success, errors, results}) => {
+ *     console.log(success);
  *     console.error(errors);
+ *     console.log(results);
  *    })
  */
 const sequentPromises = (promises, canRunTask = canRunTaskTrue) =>
   promises.reduce(
     (promiseChain, currentTask) =>
-      promiseChain.then(({ results, errors }) => {
+      promiseChain.then(({ success, errors, results }) => {
         let taskPromise;
 
         if (canRunTask(currentTask)) {
@@ -70,14 +71,16 @@ const sequentPromises = (promises, canRunTask = canRunTaskTrue) =>
         return taskPromise
           .then((currentResult) => ({
             errors,
+            success: [...success, currentResult],
             results: [...results, currentResult],
           }))
           .catch((currentError) => ({
-            results,
+            success,
             errors: [...errors, currentError],
+            results: [...results, currentError],
           }));
       }),
-    Promise.resolve({ results: [], errors: [] })
+    Promise.resolve({ success: [], errors: [], results: [] })
   );
 
 export default sequentPromises;

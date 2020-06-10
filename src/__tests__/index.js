@@ -34,15 +34,17 @@ const delayedPromises = [
 
 describe('sequentPromises', () => {
   it('resolved Promises', () =>
-    sequentPromises(promises).then(({ results, errors }) => {
-      expect(results).toEqual([result, result]);
+    sequentPromises(promises).then(({ success, errors, results }) => {
+      expect(success).toEqual([result, result]);
       expect(errors).toEqual([error]);
+      expect(results).toEqual([result, error, result]);
     }));
 
   it('rejected Promises', () =>
-    sequentPromises(emptyPromises).then(({ results, errors }) => {
-      expect(results).toEqual([]);
+    sequentPromises(emptyPromises).then(({ success, errors, results }) => {
+      expect(success).toEqual([]);
       expect(errors).toEqual([error, error]);
+      expect(results).toEqual([error, error]);
     }));
 
   it('stop Promises sync', () => {
@@ -51,9 +53,10 @@ describe('sequentPromises', () => {
 
     active = false;
 
-    return request.then(({ results, errors }) => {
-      expect(results).toEqual([]);
+    return request.then(({ success, errors, results }) => {
+      expect(success).toEqual([]);
       expect(errors.length).toBe(4);
+      expect(results.length).toBe(4);
     });
   });
 
@@ -65,18 +68,20 @@ describe('sequentPromises', () => {
       active = false;
     });
 
-    return request.then(({ results, errors }) => {
-      expect(results).toEqual([result, 10]);
+    return request.then(({ success, errors, results }) => {
+      expect(success).toEqual([result, 10]);
       expect(errors.length).toBe(2);
+      expect(results.length).toBe(4);
     });
   });
 
   it('canRunTask', () => {
     const canRunTask = (task) => task !== promiseReject;
 
-    return sequentPromises(promises, canRunTask).then(({ results, errors }) => {
-      expect(results).toEqual([result, result]);
+    return sequentPromises(promises, canRunTask).then(({ success, errors, results }) => {
+      expect(success).toEqual([result, result]);
       expect(errors.length).toBe(1);
+      expect(results.length).toBe(3);
       expect(isNotRunningError(errors[0])).toEqual(true);
     });
   });
