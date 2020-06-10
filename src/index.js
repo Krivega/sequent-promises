@@ -43,17 +43,20 @@ const canRunTaskTrue = () => true;
  * @param {array}    promises   - Functions returns promises
  * @param {function} canRunTask - Function returns true, if need run current task
  *
- * @returns {Promise} resolved object with arrays of success, errors and results
+ * @returns {Promise} resolved object with arrays of success, errors and results.
+ *                    isSuccessful, isError - for last result
  *
  * @example
  * const urls = ['/url1', '/url2', '/url3']
  * const fetchUrls = urls.map(url => () => fetch(url))
  *
  * sequentPromises(fetchUrls)
- *   .then(({success, errors, results}) => {
+ *   .then(({success, errors, results, isSuccessful, isError}) => {
  *     console.log(success);
  *     console.error(errors);
  *     console.log(results);
+ *     console.log(isSuccessful);
+ *     console.log(isError);
  *    })
  */
 const sequentPromises = (promises, canRunTask = canRunTaskTrue) =>
@@ -73,11 +76,15 @@ const sequentPromises = (promises, canRunTask = canRunTaskTrue) =>
             errors,
             success: [...success, currentResult],
             results: [...results, currentResult],
+            isSuccessful: true,
+            isError: false,
           }))
           .catch((currentError) => ({
             success,
             errors: [...errors, currentError],
             results: [...results, currentError],
+            isSuccessful: false,
+            isError: true,
           }));
       }),
     Promise.resolve({ success: [], errors: [], results: [] })

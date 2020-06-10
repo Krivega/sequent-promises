@@ -29,11 +29,13 @@ const error = new Error('error');
 const promiseResolve = () => Promise.resolve(result);
 const promiseReject = () => Promise.reject(error);
 
-sequentPromises([promiseResolve, promiseReject, promiseResolve]).then(
+sequentPromises([promiseResolve, promiseReject, promiseResolve, isSuccessful, isError]).then(
   ({ success, errors, results }) => {
     console.log(success); // [result, result]
     console.log(errors); // ['Not running: Promise was not running']
     console.log(results); // [result, 'Not running: Promise was not running', result]
+    console.log(isSuccessful); // true - last promise
+    console.log(isError); // false - last promise
     console.log(isNotRunningError(errors[0])); //true;
   }
 );

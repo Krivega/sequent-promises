@@ -34,17 +34,21 @@ const delayedPromises = [
 
 describe('sequentPromises', () => {
   it('resolved Promises', () =>
-    sequentPromises(promises).then(({ success, errors, results }) => {
+    sequentPromises(promises).then(({ success, errors, results, isSuccessful, isError }) => {
       expect(success).toEqual([result, result]);
       expect(errors).toEqual([error]);
       expect(results).toEqual([result, error, result]);
+      expect(isSuccessful).toBe(true);
+      expect(isError).toBe(false);
     }));
 
   it('rejected Promises', () =>
-    sequentPromises(emptyPromises).then(({ success, errors, results }) => {
+    sequentPromises(emptyPromises).then(({ success, errors, results, isSuccessful, isError }) => {
       expect(success).toEqual([]);
       expect(errors).toEqual([error, error]);
       expect(results).toEqual([error, error]);
+      expect(isSuccessful).toBe(false);
+      expect(isError).toBe(true);
     }));
 
   it('stop Promises sync', () => {
@@ -53,10 +57,12 @@ describe('sequentPromises', () => {
 
     active = false;
 
-    return request.then(({ success, errors, results }) => {
+    return request.then(({ success, errors, results, isSuccessful, isError }) => {
       expect(success).toEqual([]);
       expect(errors.length).toBe(4);
       expect(results.length).toBe(4);
+      expect(isSuccessful).toBe(false);
+      expect(isError).toBe(true);
     });
   });
 
@@ -68,21 +74,27 @@ describe('sequentPromises', () => {
       active = false;
     });
 
-    return request.then(({ success, errors, results }) => {
+    return request.then(({ success, errors, results, isSuccessful, isError }) => {
       expect(success).toEqual([result, 10]);
       expect(errors.length).toBe(2);
       expect(results.length).toBe(4);
+      expect(isSuccessful).toBe(false);
+      expect(isError).toBe(true);
     });
   });
 
   it('canRunTask', () => {
     const canRunTask = (task) => task !== promiseReject;
 
-    return sequentPromises(promises, canRunTask).then(({ success, errors, results }) => {
-      expect(success).toEqual([result, result]);
-      expect(errors.length).toBe(1);
-      expect(results.length).toBe(3);
-      expect(isNotRunningError(errors[0])).toEqual(true);
-    });
+    return sequentPromises(promises, canRunTask).then(
+      ({ success, errors, results, isSuccessful, isError }) => {
+        expect(success).toEqual([result, result]);
+        expect(errors.length).toBe(1);
+        expect(results.length).toBe(3);
+        expect(isNotRunningError(errors[0])).toEqual(true);
+        expect(isSuccessful).toBe(true);
+        expect(isError).toBe(false);
+      }
+    );
   });
 });
