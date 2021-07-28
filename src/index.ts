@@ -1,14 +1,10 @@
 const idError = 'ERROR_NOT_RUNNING';
 
-/**
- * Creates an error not running.
- *
- * @param {Promise} basePromise - The base promise
- *
- * @returns {object} error
- */
-const createErrorNotRunning = (basePromise) => {
-  const error = new Error('Promise was not running');
+type TTask<T> = () => Promise<T>;
+type TCustomError<T> = Error & { basePromise: TTask<T>; id: string };
+
+const createErrorNotRunning = <T>(basePromise: TTask<T>): TCustomError<T> => {
+  const error = new Error('Promise was not running') as unknown as TCustomError<T>;
 
   error.basePromise = basePromise;
   error.id = idError;
@@ -17,22 +13,9 @@ const createErrorNotRunning = (basePromise) => {
   return error;
 };
 
-/**
- * Determines if not running. error.
- *
- * @param {Object} param    - param
- * @param {string} param.id - The identifier
- *
- * @returns {boolean} True if not running. error, False otherwise.
- */
-export const isNotRunningError = ({ id }) => id === idError;
-
-/**
- * The default is can run task
- *
- * @returns {boolean} false
- */
-const canRunTaskTrue = () => true;
+export const isNotRunningError = (error: any) => {
+  return error && error.id === idError;
+};
 
 /**
  * sequentPromises resolves Promises sequentially.
@@ -59,35 +42,46 @@ const canRunTaskTrue = () => true;
  *     console.log(isError);
  *    })
  */
-const sequentPromises = (promises, canRunTask = canRunTaskTrue) =>
-  promises.reduce(
-    (promiseChain, currentTask) =>
-      promiseChain.then(({ success, errors, results }) => {
-        let taskPromise;
+const sequentPromises = <T>(promises: TTask<T>[], canRunTask?: (task: TTask<T>) => boolean) => {
+  type TResponse = {
+    success: T[];
+    errors: (Error | TCustomError<T>)[];
+    results: T[];
+    isSuccessful: boolean;
+    isError: boolean;
+  };
 
-        if (canRunTask(currentTask)) {
-          taskPromise = currentTask();
-        } else {
-          taskPromise = Promise.reject(createErrorNotRunning(currentTask));
-        }
+  return promises.reduce((promiseChain, currentTask) => {
+    return promiseChain.then(({ success, errors, results }) => {
+      let taskPromise;
 
-        return taskPromise
-          .then((currentResult) => ({
+      if (!canRunTask || canRunTask(currentTask)) {
+        taskPromise = currentTask();
+      } else {
+        taskPromise = Promise.reject(createErrorNotRunning<T>(currentTask));
+      }
+
+      return taskPromise
+        .then((currentResult) => {
+          return {
             errors,
             success: [...success, currentResult],
             results: [...results, currentResult],
             isSuccessful: true,
             isError: false,
-          }))
-          .catch((currentError) => ({
+          };
+        })
+        .catch((currentError) => {
+          return {
             success,
             errors: [...errors, currentError],
             results: [...results, currentError],
             isSuccessful: false,
             isError: true,
-          }));
-      }),
-    Promise.resolve({ success: [], errors: [], results: [] })
-  );
+          };
+        });
+    });
+  }, Promise.resolve<TResponse>({ success: [], errors: [], results: [], isSuccessful: false, isError: false }));
+};
 
 export default sequentPromises;
