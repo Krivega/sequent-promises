@@ -5,7 +5,7 @@
     "sourceType": "module",
     "tsconfigRootDir": "."
   },
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:jest/recommended", "prettier"],
+  "extends": ["plugin:jest/recommended", "airbnb-base", "airbnb-typescript/base", "prettier"],
   "plugins": ["jest", "prettier", "@typescript-eslint"],
   "env": {
     "browser": true
