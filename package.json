@@ -32,7 +32,7 @@
     "build:ts": "tsc --build tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint src/. --ext .ts",
-    "prepare": "npm run build",
+    "prepare": "npm run build && husky install",
     "prepublishOnly": "npm test && npm run lint",
     "release": "standard-version",
     "test": "jest"
@@ -72,5 +72,8 @@
       "prerelease": "npm run lint && CI=true npm test",
       "postchangelog": "prettier --write \"CHANGELOG.md\""
     }
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix"
   }
 }
