@@ -13,8 +13,14 @@ const createErrorNotRunning = <T>(basePromise: TTask<T>): TCustomError<T> => {
   return error;
 };
 
-export const isNotRunningError = (error: any) => {
-  return error && error.id === idError;
+export const isNotRunningError = (error?: unknown) => {
+  return (
+    error !== null &&
+    error !== undefined &&
+    typeof error === 'object' &&
+    'id' in error &&
+    error.id === idError
+  );
 };
 
 /**
@@ -42,7 +48,10 @@ export const isNotRunningError = (error: any) => {
  *     console.log(isError);
  *    })
  */
-const sequentPromises = <T>(promises: TTask<T>[], canRunTask?: (task: TTask<T>) => boolean) => {
+const sequentPromises = async <T>(
+  promises: TTask<T>[],
+  canRunTask?: (task: TTask<T>) => boolean,
+) => {
   type TResponse = {
     success: T[];
     errors: (Error | TCustomError<T>)[];
@@ -51,37 +60,44 @@ const sequentPromises = <T>(promises: TTask<T>[], canRunTask?: (task: TTask<T>) 
     isError: boolean;
   };
 
-  return promises.reduce((promiseChain, currentTask) => {
-    return promiseChain.then(({ success, errors, results }) => {
-      let taskPromise;
+  // eslint-disable-next-line unicorn/no-array-reduce
+  return promises.reduce(
+    async (promiseChain, currentTask) => {
+      return promiseChain.then(async ({ success, errors, results }) => {
+        const taskPromise =
+          !canRunTask || canRunTask(currentTask)
+            ? currentTask()
+            : Promise.reject(createErrorNotRunning<T>(currentTask));
 
-      if (!canRunTask || canRunTask(currentTask)) {
-        taskPromise = currentTask();
-      } else {
-        taskPromise = Promise.reject(createErrorNotRunning<T>(currentTask));
-      }
-
-      return taskPromise
-        .then((currentResult) => {
-          return {
-            errors,
-            success: [...success, currentResult],
-            results: [...results, currentResult],
-            isSuccessful: true,
-            isError: false,
-          };
-        })
-        .catch((currentError) => {
-          return {
-            success,
-            errors: [...errors, currentError],
-            results: [...results, currentError],
-            isSuccessful: false,
-            isError: true,
-          };
-        });
-    });
-  }, Promise.resolve<TResponse>({ success: [], errors: [], results: [], isSuccessful: false, isError: false }));
+        return taskPromise
+          .then((currentResult) => {
+            return {
+              errors,
+              success: [...success, currentResult],
+              results: [...results, currentResult],
+              isSuccessful: true,
+              isError: false,
+            };
+          })
+          .catch((currentError) => {
+            return {
+              success,
+              errors: [...errors, currentError],
+              results: [...results, currentError],
+              isSuccessful: false,
+              isError: true,
+            };
+          });
+      });
+    },
+    Promise.resolve<TResponse>({
+      success: [],
+      errors: [],
+      results: [],
+      isSuccessful: false,
+      isError: false,
+    }),
+  );
 };
 
 export default sequentPromises;

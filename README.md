@@ -37,7 +37,7 @@ sequentPromises([promiseResolve, promiseReject, promiseResolve, isSuccessful, is
     console.log(isSuccessful); // true - last promise
     console.log(isError); // false - last promise
     console.log(isNotRunningError(errors[0])); //true;
-  }
+  },
 );
 ```
 
@@ -51,7 +51,7 @@ npm test
 
 **Krivega Dmitriy**
 
-- Website: https://krivega.com
+- Website: <https://krivega.com>
 - Github: [@Krivega](https://github.com/Krivega)
 
 ## Contributing

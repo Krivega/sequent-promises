@@ -1,23 +1,43 @@
-import delayPromise from 'promise-delay';
 import sequentPromises, { isNotRunningError } from '../index';
 
-const result = 'result';
+const noop = () => {};
+const deferred = <T = void>() => {
+  let resolveDeferred: (data: T) => void = noop;
+  let rejectDeferred: (error: Error) => void = noop;
+
+  const promise = new Promise<T>((resolve, reject) => {
+    resolveDeferred = resolve;
+    rejectDeferred = reject;
+  });
+
+  return { promise, resolve: resolveDeferred, reject: rejectDeferred };
+};
+
+const delayPromise = async (timeout: number): Promise<void> => {
+  const { promise, resolve } = deferred();
+
+  setTimeout(resolve, timeout);
+
+  return promise;
+};
+
+const result = 777;
 const error = new Error('error');
 
 /**
  * promiseResolve
  * @returns {Promise} promiseResolve
  */
-const promiseResolve = () => {
-  return Promise.resolve(result);
+const promiseResolve = async () => {
+  return result;
 };
 
 /**
  * promiseReject
  * @returns {Promise} promiseReject
  */
-const promiseReject = () => {
-  return Promise.reject(error);
+const promiseReject = async () => {
+  throw error;
 };
 
 /**
@@ -25,8 +45,8 @@ const promiseReject = () => {
  * @param {number} timeout - Timeout
  * @returns {Promise} promiseDelayed
  */
-const resolvePromiseDelayed = (timeout) => {
-  return () => {
+const resolvePromiseDelayed = (timeout: number) => {
+  return async () => {
     return delayPromise(timeout).then(() => {
       return timeout;
     });
@@ -43,19 +63,19 @@ const delayedPromises = [
 ];
 
 describe('sequentPromises', () => {
-  it('resolved Promises', () => {
-    return sequentPromises<string>(promises).then(
+  it('resolved Promises', async () => {
+    return sequentPromises<number>(promises).then(
       ({ success, errors, results, isSuccessful, isError }) => {
         expect(success).toEqual([result, result]);
         expect(errors).toEqual([error]);
         expect(results).toEqual([result, error, result]);
         expect(isSuccessful).toBe(true);
         expect(isError).toBe(false);
-      }
+      },
     );
   });
 
-  it('rejected Promises', () => {
+  it('rejected Promises', async () => {
     return sequentPromises(emptyPromises).then(
       ({ success, errors, results, isSuccessful, isError }) => {
         expect(success).toEqual([]);
@@ -63,11 +83,11 @@ describe('sequentPromises', () => {
         expect(results).toEqual([error, error]);
         expect(isSuccessful).toBe(false);
         expect(isError).toBe(true);
-      }
+      },
     );
   });
 
-  it('stop Promises sync', () => {
+  it('stop Promises sync', async () => {
     let active = true;
     const request = sequentPromises(delayedPromises, () => {
       return active;
@@ -84,12 +104,13 @@ describe('sequentPromises', () => {
     });
   });
 
-  it('stop Promises async', () => {
+  it('stop Promises async', async () => {
     let active = true;
     const request = sequentPromises(delayedPromises, () => {
       return active;
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     delayPromise(0).then(() => {
       active = false;
     });
@@ -103,8 +124,9 @@ describe('sequentPromises', () => {
     });
   });
 
-  it('canRunTask', () => {
-    const canRunTask = (task) => {
+  it('canRunTask', async () => {
+    // eslint-disable-next-line unicorn/consistent-function-scoping
+    const canRunTask = (task: () => Promise<number>) => {
       return task !== promiseReject;
     };
 
@@ -116,7 +138,7 @@ describe('sequentPromises', () => {
         expect(isNotRunningError(errors[0])).toEqual(true);
         expect(isSuccessful).toBe(true);
         expect(isError).toBe(false);
-      }
+      },
     );
   });
 });
