@@ -79,11 +79,11 @@ const sequentPromises = async <T>(
               isError: false,
             };
           })
-          .catch((currentError) => {
+          .catch((currentError: unknown) => {
             return {
               success,
-              errors: [...errors, currentError],
-              results: [...results, currentError],
+              errors: [...errors, currentError as Error],
+              results: [...results, currentError as T],
               isSuccessful: false,
               isError: true,
             };
