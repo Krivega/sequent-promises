@@ -100,4 +100,4 @@ const sequentPromises = async <T>(
   );
 };
 
-export default sequentPromises;
+export { sequentPromises };

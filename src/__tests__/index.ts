@@ -1,4 +1,6 @@
-import sequentPromises, { isNotRunningError } from '../index';
+/// <reference types="jest" />
+
+import { isNotRunningError, sequentPromises } from '../index';
 
 const noop = () => {};
 const deferred = <T = void>() => {
