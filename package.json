@@ -1,6 +1,6 @@
 {
   "name": "sequent-promises",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "sequentPromises resolves Promises sequentially",
   "keywords": [
     "promise"

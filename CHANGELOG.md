@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/Krivega/sequent-promises/compare/v2.0.0...v2.0.1) (2024-05-21)
+
+### Bug Fixes
+
+- exports cjs ([2e8febd](https://github.com/Krivega/sequent-promises/commit/2e8febd6f5a78e050ce211da6b03ab891ce930f8))
+
 ## [2.0.0](https://github.com/Krivega/sequent-promises/compare/v1.0.3...v2.0.0) (2024-05-19)
 
 ### ⚠ BREAKING CHANGES
